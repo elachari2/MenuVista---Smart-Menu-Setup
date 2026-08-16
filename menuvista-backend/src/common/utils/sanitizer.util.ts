@@ -131,35 +131,38 @@ export class SanitizerUtil {
   }
 
   /**
-   * Extrait et nettoie un prix numérique valide.
+   * Extrait et nettoie un prix numérique valide avec précision absolue.
    */
   static cleanPrice(priceInput: unknown): number {
     if (typeof priceInput === 'number') {
-      return isNaN(priceInput) || priceInput < 0 ? 0 : Math.round(priceInput * 100) / 100;
+      return isNaN(priceInput) || priceInput < 0 || priceInput >= 10000 ? 0 : Math.round(priceInput * 100) / 100;
     }
 
     if (typeof priceInput === 'string') {
-      const sanitized = priceInput.replace(/[^0-9.,]/g, '').replace(',', '.');
+      const sanitized = priceInput.replace(/,/g, '.').replace(/[^0-9.]/g, '');
       const parsed = parseFloat(sanitized);
-      return isNaN(parsed) || parsed < 0 ? 0 : Math.round(parsed * 100) / 100;
+      return isNaN(parsed) || parsed < 0 || parsed >= 10000 ? 0 : Math.round(parsed * 100) / 100;
     }
 
     return 0;
   }
 
   /**
-   * Normalise le code ISO ou symbole monétaire sans forcer MAD par défaut.
+   * Normalise le code ISO ou symbole monétaire de manière stricte et impartiale ($ , € , DH , £ , AED , LIRA...).
    */
   static formatCurrency(currencyInput: string | null | undefined): string {
     if (!currencyInput) return '$';
     const cleaned = this.cleanString(currencyInput).toUpperCase();
 
     if (cleaned === '$' || cleaned.includes('USD') || cleaned.includes('DOLLAR')) return '$';
-    if (cleaned === '€' || cleaned.includes('EUR') || cleaned.includes('EURO')) return 'EUR';
-    if (cleaned.includes('DH') || cleaned.includes('MAD') || cleaned.includes('DIRHAM')) return 'MAD';
-    if (cleaned.includes('AED')) return 'AED';
-    if (cleaned.includes('LIRA') || cleaned.includes('TL')) return 'LIRA';
-    if (cleaned.includes('GBP') || cleaned.includes('£')) return 'GBP';
+    if (cleaned === '€' || cleaned.includes('EUR') || cleaned.includes('EURO')) return '€';
+    if (cleaned.includes('DH') || cleaned.includes('MAD') || cleaned.includes('DIRHAM') || currencyInput.includes('د.م.')) return 'DH';
+    if (cleaned.includes('AED') || currencyInput.includes('د.إ')) return 'AED';
+    if (cleaned.includes('LIRA') || cleaned.includes('TL') || cleaned.includes('₺')) return 'LIRA';
+    if (cleaned.includes('GBP') || cleaned.includes('£')) return '£';
+    if (cleaned.includes('SAR')) return 'SAR';
+    if (cleaned.includes('CAD')) return 'CAD';
+    if (cleaned.includes('CHF')) return 'CHF';
 
     return cleaned.substring(0, 10) || '$';
   }

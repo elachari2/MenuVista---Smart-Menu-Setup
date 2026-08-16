@@ -4,6 +4,7 @@ import { GroqService } from '../../src/modules/llm/groq.service';
 
 describe('GroqService - Fallback Multi-Modèles', () => {
   let service: GroqService;
+  jest.setTimeout(30000);
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({

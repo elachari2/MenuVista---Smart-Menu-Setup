@@ -60,6 +60,19 @@ export class DatasetService implements OnModuleInit {
   }
 
   /**
+   * Calcul d'un hachage numérique déterministe pour une chaîne
+   */
+  private hashString(str: string): number {
+    let hash = 0;
+    const s = (str || '').toLowerCase().trim();
+    for (let i = 0; i < s.length; i++) {
+      hash = (hash << 5) - hash + s.charCodeAt(i);
+      hash |= 0;
+    }
+    return Math.abs(hash);
+  }
+
+  /**
    * Recherche par mots clés en mémoire (Simulant la recherche FTS5 sur le dataset gastronomique)
    */
   searchFTS5(query: string, limit: number = 10): DatasetItem[] {
@@ -86,6 +99,32 @@ export class DatasetService implements OnModuleInit {
       .sort((a, b) => b.score - a.score);
 
     return scored.slice(0, limit).map((s) => s.item);
+  }
+
+  /**
+   * Recherche et sélectionne un visuel HD unique pour un plat donné avec support de la rotation
+   */
+  matchDishVisual(dishNom: string, category?: string, tags: string[] = [], rotateOffset: number = 0): { item: DatasetItem; candidates: DatasetItem[] } | null {
+    if (this.items.length === 0) {
+      this.loadDataset();
+    }
+
+    const searchQuery = `${dishNom} ${category || ''} ${tags.join(' ')}`.trim();
+    const candidates = this.searchFTS5(searchQuery, 10);
+
+    if (candidates.length === 0) {
+      return null;
+    }
+
+    // Utilisation du hachage du nom + l'offset de rotation pour sélectionner un candidat unique
+    const baseHash = this.hashString(dishNom);
+    const index = (baseHash + rotateOffset) % candidates.length;
+    const selectedItem = candidates[index];
+
+    return {
+      item: selectedItem,
+      candidates,
+    };
   }
 
   /**

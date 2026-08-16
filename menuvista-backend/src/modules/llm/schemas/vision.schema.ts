@@ -10,18 +10,21 @@ const StringOrMultilingualSchema = z.union([
   }),
 ]);
 
-/** Transformateur universel de prix (gère nombres et chaînes ex: "90", "90.50 MAD", "12€") */
+/** Transformateur universel et ultra-strict de prix (convertit tout format en nombre pur) */
 const PriceSchema = z.preprocess((val) => {
-  if (typeof val === 'number') return val;
+  if (typeof val === 'number') {
+    return isNaN(val) || val < 0 || val >= 10000 ? null : Math.round(val * 100) / 100;
+  }
   if (typeof val === 'string') {
+    // Remplacement des virgules par des points et extraction des chiffres et points
     const cleaned = val.replace(/,/g, '.').replace(/[^0-9.]/g, '');
     const parsed = parseFloat(cleaned);
-    return isNaN(parsed) ? null : parsed;
+    return isNaN(parsed) || parsed < 0 || parsed >= 10000 ? null : Math.round(parsed * 100) / 100;
   }
   return null;
 }, z.number().nullable().optional());
 
-/** Schéma de validation d'un plat extrait avec détection universelle des devises */
+/** Schéma de validation ultra-strict d'un plat extrait avec détection universelle des devises */
 export const PlatVisionSchema = z.object({
   nom: StringOrMultilingualSchema,
   description: StringOrMultilingualSchema.nullable().optional(),

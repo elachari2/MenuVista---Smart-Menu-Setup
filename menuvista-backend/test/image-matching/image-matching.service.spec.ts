@@ -23,6 +23,13 @@ describe('ImageMatchingService', () => {
               }
               return [];
             },
+            matchDishVisual: (dishNom: string) => {
+              if (dishNom.toLowerCase().includes('margherita')) {
+                const item = { id: 1, nom: 'Pizza Margherita', categorie: 'Pizza', tags: 'italienne', image_url: '/images/dataset/margherita.webp' };
+                return { item, candidates: [item] };
+              }
+              return null;
+            },
             getTotalCount: () => 3,
           },
         },

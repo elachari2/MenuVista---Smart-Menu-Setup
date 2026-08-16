@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ChunkService } from './chunk.service';
 import { AppLogger } from '../../common/logger/logger.util';
+import { SanitizerUtil } from '../../common/utils/sanitizer.util';
 import {
   UnifiedMenuExtractionType,
   CategorieVisionType,
@@ -16,7 +17,7 @@ const MARKETING_DESCRIPTION_PATTERNS = [
 ];
 
 /**
- * Service de structuration locale par blocs (Chunking) avec détection impartiale des devises ($, €, DH, AED, LIRA, £).
+ * Service de structuration locale par blocs (Chunking) ultra-stricte avec détection fréquentielle des devises ($, €, DH, AED, LIRA, £).
  */
 @Injectable()
 export class StructurationService {
@@ -40,7 +41,7 @@ export class StructurationService {
       };
     }
 
-    // Détection impartiale de la devise globale du menu ($ , € , DH , AED , LIRA , £)
+    // Détection fréquentielle impartiale de la vraie devise dominante du menu ($ , € , DH , AED , LIRA , £)
     const globalCurrency = this.detectGlobalCurrency(ocrText);
 
     // Découpage du texte en blocs par catégorie (désimbrication des colonnes incluses)
@@ -78,9 +79,9 @@ export class StructurationService {
           continue;
         }
 
-        // Extraction d'un nouveau plat dans ce bloc
-        const plat = this.extractDishFromLine(line, globalCurrency);
-        if (plat) {
+        // Extraction d'un ou plusieurs plats (gestion des lignes à variantes multiples "33cl 3$ / 50cl 5$")
+        const extractedPlats = this.extractDishesFromLine(line, globalCurrency);
+        for (const plat of extractedPlats) {
           categoryPlats.push(plat);
           totalPlats++;
           if (plat.prix === null || plat.prix_incertain) {
@@ -109,31 +110,85 @@ export class StructurationService {
   }
 
   /**
-   * Détecte la vraie devise dominante utilisée sur l'ensemble du menu
+   * Détecte la vraie devise dominante utilisée sur l'ensemble du menu via analyse fréquentielle
    */
-  private detectGlobalCurrency(text: string): string {
-    if (/\$|USD|DOLLAR/i.test(text)) return '$';
-    if (/€|EUR|EURO/i.test(text)) return '€';
-    if (/£|GBP|POUND/i.test(text)) return '£';
-    if (/AED|د\.إ/i.test(text)) return 'AED';
-    if (/LIRA|TL|₺/i.test(text)) return 'LIRA';
-    if (/Dhs|DH|MAD|د\.م\./i.test(text)) return 'DH';
-    return '$';
+  public detectGlobalCurrency(text: string): string {
+    const counts = {
+      '$': (text.match(/\$|USD|DOLLAR/gi) || []).length,
+      '€': (text.match(/€|EUR|EURO/gi) || []).length,
+      'DH': (text.match(/Dhs|DH|MAD|د\.م\./gi) || []).length,
+      '£': (text.match(/£|GBP|POUND/gi) || []).length,
+      'AED': (text.match(/AED|د\.إ/gi) || []).length,
+      'LIRA': (text.match(/LIRA|TL|₺/gi) || []).length,
+    };
+
+    let maxCurrency = '$';
+    let maxCount = 0;
+
+    for (const [curr, count] of Object.entries(counts)) {
+      if (count > maxCount) {
+        maxCount = count;
+        maxCurrency = curr;
+      }
+    }
+
+    return maxCurrency;
   }
 
   private isDescriptionLine(line: string): boolean {
     const startsWithLowercase = /^[a-zàâéèêëîïôûùüç]/.test(line);
     const containsKeywords = /(sauce|accompagné|ingrédients|herbes|piment|confit|marinés|frites|salade|citron|basilic|pain|pomme de terre)/i.test(line);
-    const hasPrice = /\d{1,3}\s*(Dhs|DH|MAD|EUR|€|\$|AED|LIRA)/i.test(line) || /\b\d+[.,]\d{2}\b/.test(line);
+    const hasPrice = /\d{1,3}\s*(Dhs|DH|MAD|EUR|€|\$|AED|LIRA|TL|£|GBP)/i.test(line) || /\b\d+[.,]\d{2}\b/.test(line);
 
     return (startsWithLowercase || containsKeywords || line.startsWith('(')) && !hasPrice;
   }
 
-  private extractDishFromLine(line: string, defaultCurrency: string = '$'): PlatVisionType | null {
-    // Nettoyer les préfixes de numérotation comme 315., 316., 1., 01.
+  /**
+   * Extrait un ou plusieurs plats d'une ligne (gère les variantes séparées par "/" ou "|")
+   */
+  private extractDishesFromLine(line: string, defaultCurrency: string = '$'): PlatVisionType[] {
+    // Si la ligne contient plusieurs prix séparés par des slashs ou des barres (ex: "33cl 3$ / 50cl 5$" ou "Verre 5€ / Bouteille 22€")
+    if ((line.includes('/') || line.includes('|')) && (line.match(/\d/g) || []).length >= 2) {
+      const parts = line.split(/[/|]/).map((p) => p.trim()).filter((p) => p.length > 0);
+      const results: PlatVisionType[] = [];
+
+      let baseName = '';
+      for (const part of parts) {
+        const dish = this.extractSingleDish(part, defaultCurrency);
+        if (dish) {
+          if (!baseName) {
+            baseName = dish.nom as string;
+          } else if (dish.nom && (dish.nom as string).length < 6) {
+            // Si la variante n'a qu'un nom court (ex: "50cl"), préfixer avec le nom principal
+            dish.nom = `${baseName} (${dish.nom})`;
+          }
+          results.push(dish);
+        }
+      }
+
+      if (results.length > 0) return results;
+    }
+
+    const single = this.extractSingleDish(line, defaultCurrency);
+    return single ? [single] : [];
+  }
+
+  /**
+   * Extrait un plat unique d'une portion de ligne avec nettoyage strict
+   */
+  private extractSingleDish(line: string, defaultCurrency: string = '$'): PlatVisionType | null {
+    // Nettoyer les préfixes de numérotation comme "315.", "316.", "01.", "1-", "2)"
     let cleanedLine = line.replace(/^\d{1,4}[\.\-\)\s]+/, '').trim();
 
-    // Expression régulière de recherche de prix et devise (ex: 8 $, 9 $, 99 Dhs, 159 Dhs, 14 AED, 12 €)
+    // Recherche d'unités de mesure (33cl, 50cl, 250g, 1L, etc.)
+    let extractedUnit: string | null = null;
+    const unitMatch = cleanedLine.match(/\b(\d{1,4}\s*(?:cl|ml|l|g|kg))\b/i);
+    if (unitMatch) {
+      extractedUnit = unitMatch[1].trim();
+      cleanedLine = cleanedLine.replace(unitMatch[0], '').trim();
+    }
+
+    // Expression régulière universelle de prix et devise
     const priceWithCurrencyRegex = /(?:(\d+(?:[.,]\d{1,2})?)\s*(Dhs|DH|MAD|EUR|€|\$|USD|AED|LIRA|TL|£|GBP|SAR))|(?:(Dhs|DH|MAD|EUR|€|\$|USD|AED|LIRA|TL|£|GBP|SAR)\s*(\d+(?:[.,]\d{1,2})?))|(?:\.\.\.\s*(\d+(?:[.,]\d{1,2})?))/i;
     const match = cleanedLine.match(priceWithCurrencyRegex);
 
@@ -147,35 +202,25 @@ export class StructurationService {
       const currStr = match[2] || match[3];
 
       if (priceStr) {
-        const parsed = parseFloat(priceStr.replace(',', '.'));
-        if (!isNaN(parsed) && parsed > 0 && parsed < 5000) {
-          extractedPrice = parsed;
+        extractedPrice = SanitizerUtil.cleanPrice(priceStr);
+        if (extractedPrice === 0 && !priceStr.includes('0')) {
+          extractedPrice = null;
+          isPriceUncertain = true;
         }
       }
 
       if (currStr) {
-        const u = currStr.toUpperCase();
-        if (currStr === '$' || u === 'USD') {
-          extractedCurrency = '$';
-        } else if (currStr === '€' || u === 'EUR') {
-          extractedCurrency = '€';
-        } else if (currStr.toLowerCase() === 'dhs' || u === 'DH' || u === 'MAD') {
-          extractedCurrency = 'DH';
-        } else if (currStr === '£' || u === 'GBP') {
-          extractedCurrency = '£';
-        } else {
-          extractedCurrency = u;
-        }
+        extractedCurrency = SanitizerUtil.formatCurrency(currStr);
       }
 
       rawDishName = cleanedLine.replace(match[0], '').trim();
     } else {
-      // Deuxième tentative : recherche d'un nombre isolé à la fin de la ligne du plat (ex: "Mojito ... 8")
+      // Deuxième tentative : recherche d'un nombre isolé à la fin de la ligne (ex: "Mojito ... 8")
       const fallbackPriceMatch = cleanedLine.match(/(\d+(?:[.,]\d{1,2})?)\s*(?:les\s*\d+\s*g[r]?|dhs|dh|mad|€|\$|aed|lira)?\s*$/i);
       if (fallbackPriceMatch) {
-        const parsed = parseFloat(fallbackPriceMatch[1].replace(',', '.'));
-        if (!isNaN(parsed) && parsed > 0 && parsed < 5000) {
-          extractedPrice = parsed;
+        const parsedPrice = SanitizerUtil.cleanPrice(fallbackPriceMatch[1]);
+        if (parsedPrice > 0) {
+          extractedPrice = parsedPrice;
           rawDishName = cleanedLine.replace(fallbackPriceMatch[0], '').trim();
         } else {
           isPriceUncertain = true;
@@ -200,6 +245,7 @@ export class StructurationService {
       description: null,
       prix: extractedPrice,
       devise: extractedCurrency,
+      unite: extractedUnit,
       prix_incertain: isPriceUncertain,
       nom_incertain: false,
     };

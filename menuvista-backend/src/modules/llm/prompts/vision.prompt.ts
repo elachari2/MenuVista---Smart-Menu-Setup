@@ -1,36 +1,48 @@
 /**
- * Prompt unifié et universel optimisé pour l'IA Vision (GROQ Llama 3.3 70B / DeepSeek),
- * avec détection multi-devises stricte et impartiale ($ , € , DH , Dhs , MAD , AED , LIRA , £...).
+ * Prompt unifié et universel d'une précision absolue (0 erreur) pour l'IA Vision / LLM (GROQ Llama 3.3 70B / DeepSeek),
+ * avec détection stricte des devises ($ , € , DH , Dhs , MAD , AED , LIRA , £...), extraction numérique exacte des prix,
+ * nettoyage rigoureux des noms de plats et organisation stricte par catégories.
+ * 
  * @param ocrText Texte brut extrait par l'OCR Tesseract
- * @returns Prompt universel multi-colonnes et multi-devises
+ * @returns Prompt universel ultra-directive
  */
 export const BUILD_UNIFIED_VISION_PROMPT = (ocrText: string): string => `
-Tu es un expert mondial en extraction et structuration de menus de restaurants complexes pour l'IA Vision.
-
-**RÈGLES ABSOLUES ET STRICTES DE STRUCTURATION DES PRIX ET DEVISES :**
-
-1. **DÉTECTION IMPARTIALE ET EXACTE DE LA DEVISE DU MENU (ESSENTIEL) :**
-   - Analyse attentivement les symboles et codes monétaires présents sur l'image ou le texte du menu :
-     * Si le menu affiche le symbole "$" ou des prix comme "$8", "$9", "$5", "$3" -> la devise est STRICTEMENT "$".
-     * Si le menu affiche "€" ou "EUR" -> la devise est STRICTEMENT "€".
-     * Si le menu affiche "£" ou "GBP" -> la devise est STRICTEMENT "£".
-     * Si le menu affiche "AED" -> la devise est STRICTEMENT "AED".
-     * Si le menu affiche "LIRA", "TL" ou "₺" -> la devise est STRICTEMENT "LIRA".
-     * Si le menu affiche "DH", "Dhs" ou "MAD" -> la devise est "DH".
-   - Ne remplace JAMAIS "$" par "DH" ! Utilise la VRAIE DEVISE figurant sur le menu.
-
-2. **EXTRACTION PRÉCISE DE CHAQUE PRIX DE PLAT :**
-   - Recherche le chiffre correspondant au prix pour CHAQUE plat et boisson (ex: 8, 9, 5, 7, 6, 3, 4, 99, 159, 369).
-   - Si un plat comporte des variantes (ex: "Classique 159 Dhs / Truffe 179 Dhs"), crée des entrées distinctes pour chaque variante.
-
-3. **GESTION DES MENUS MULTI-COLONNES :**
-   - Traite chaque colonne verticale séparément de haut en bas. Ne mélange pas les colonnes.
+Tu es l'expert mondial n°1 en extraction et structuration automatique de menus de restaurants complexes pour l'IA Vision.
+Ton objectif est une EXTRACTION D'UNE PRÉCISION ABSOLUE DE 100% SANS AUCUNE ERREUR (0 ERREUR).
 
 ---
 
-**EXEMPLES DE STRUCTURATION MULTI-DEVISES :**
+### RÈGLES D'EXTRACTION IMPÉRATIVES ET ABSOLUES :
 
-Exemple 1 (Menu en Dollars $) :
+1. **DÉTECTION IMPARTIALE ET EXACTE DE LA DEVISE DU MENU (RÈGLE D'OR N°1) :**
+   - Analyse attentivement tous les symboles monétaires et codes de devise sur l'image ou le texte du menu :
+     * Si le menu affiche le symbole "$" ou des prix comme "$8", "$9", "$5", "8$", "9.50$" -> la devise est STRICTEMENT "$".
+     * Si le menu affiche le symbole "€" ou "EUR" -> la devise est STRICTEMENT "€".
+     * Si le menu affiche "£" ou "GBP" -> la devise est STRICTEMENT "£".
+     * Si le menu affiche "AED" ou "د.إ" -> la devise est STRICTEMENT "AED".
+     * Si le menu affiche "LIRA", "TL" ou "₺" -> la devise est STRICTEMENT "LIRA".
+     * Si le menu affiche "DH", "Dhs" ou "MAD" ou "د.م." -> la devise est STRICTEMENT "DH".
+   - Ne remplace JAMAIS "$" par "DH" ni "€" par "$" ! Respecte scrupuleusement la VRAIE DEVISE présente sur le menu.
+
+2. **EXTRACTION NUMÉRIQUE ET NETTOYAGE RIGOUREUX DES PRIX (RÈGLE N°2) :**
+   - Le champ "prix" doit être UN NOMBRE PUR (ex: 8, 9.5, 99, 159, 12.5) ou null si aucun prix n'est présent.
+   - Ne mets JAMAIS de texte ni de symbole monétaire dans le champ "prix" (pas de "$8", pas de "99 Dhs", pas de "12€").
+   - Convertis les virgules décimales en points (ex: "12,50" -> 12.5).
+   - Si un plat comporte plusieurs tailles/variantes sur la même ligne (ex: "Verre 5$ / Bouteille 22$" ou "33cl 3$ / 50cl 5$"), crée UNE ENTRÉE SEPARÉE POUR CHAQUE VARIANTE avec son nom, sa contenance/unité et son prix respectif !
+
+3. **NETTOYAGE ET PURIFICATION DU NOM DU PLAT (RÈGLE N°3) :**
+   - Supprime les numérotations d'articles (ex: "01.", "02.", "315.", "1-", "2)") du nom du plat.
+   - Supprime les puces, tirets, astérisques et pointillés (ex: "•••", "...", "*").
+   - Si le plat inclut une contenance (ex: "33cl", "50cl", "250g", "75cl"), isole cette valeur dans le champ "unite" (ex: unite: "33cl").
+
+4. **STRUCTURATION STRICTE PAR CATÉGORIES (RÈGLE N°4) :**
+   - Respecte scrupuleusement la hiérarchie des catégories présentes sur le menu (ex: "COCKTAILS", "PIZZAS", "BURGERS", "NOS PASTA", "ENTRÉES", "PLATS", "DESSERTS", "BOISSONS").
+   - Traite les menus multi-colonnes en séparant les colonnes de haut en bas sans mélanger les catégories.
+
+---
+
+### STRUCTURE JSON DE RÉPONSE STRICTEMENT ATTENDUE :
+
 \`\`\`json
 {
   "devise": "$",
@@ -39,56 +51,22 @@ Exemple 1 (Menu en Dollars $) :
       "nom": "COCKTAILS",
       "plats": [
         {
-          "nom": "Mojito",
-          "description": "Fresh mint, lime, sugar, soda, rum",
+          "nom": "Mojito Menthe Fraîche",
+          "description": "Menthe fraîche, citron vert, sucre de canne, soda, rhum",
           "prix": 8,
-          "devise": "$"
+          "devise": "$",
+          "unite": null,
+          "tags": ["Frais", "Spécialité"],
+          "allergenes": []
         },
         {
-          "nom": "Margarita",
-          "description": "Tequila, Triple sec liqueur, lime juice, salt",
-          "prix": 9,
-          "devise": "$"
-        }
-      ]
-    }
-  ]
-}
-\`\`\`
-
-Exemple 2 (Menu en Euros €) :
-\`\`\`json
-{
-  "devise": "€",
-  "categories": [
-    {
-      "nom": "PASTA",
-      "plats": [
-        {
-          "nom": "Spaghetti Carbonara",
-          "description": "Pancetta, œufs, parmesan, poivre noir",
-          "prix": 14,
-          "devise": "€"
-        }
-      ]
-    }
-  ]
-}
-\`\`\`
-
-Exemple 3 (Menu en Dirhams DH / Dhs) :
-\`\`\`json
-{
-  "devise": "DH",
-  "categories": [
-    {
-      "nom": "TAPAS",
-      "plats": [
-        {
-          "nom": "Crevettes pil pil",
-          "description": "Ail, piment, huile d'olive",
-          "prix": 99,
-          "devise": "DH"
+          "nom": "Margarita Tequila",
+          "description": "Tequila, liqueur Triple sec, jus de citron vert, sel",
+          "prix": 9.5,
+          "devise": "$",
+          "unite": null,
+          "tags": ["Classic"],
+          "allergenes": []
         }
       ]
     }
@@ -98,8 +76,8 @@ Exemple 3 (Menu en Dirhams DH / Dhs) :
 
 ---
 
-**TEXTE OCR BRUT À ANALYSER :**
+### TEXTE OCR BRUT DU MENU À EXTRAIRE :
 ${ocrText}
 
-**RÉPONDS UNIQUEMENT EN JSON VALIDE (response_format json_object), SANS AUCUN TEXTE AUTOUR.**
+**RÉPONDS UNIQUEMENT AVEC LE CODE JSON VALIDE (conforme à response_format json_object), SANS AUCUN COMMENTAIRE NI TEXTE AUTOUR.**
 `;
