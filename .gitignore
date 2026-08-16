@@ -1,20 +1,24 @@
-# Dependencies
+# ====== DEPENDANCES & BUILDS ======
 node_modules/
-
-# Build
 dist/
+dist-ssr/
+build/
+*.local
 
-# Env
+# ====== ENVIRONNEMENT & STORAGE ======
 .env
-
-# Storage
+.env.*
+!.env.example
 uploads/*
 !uploads/.gitkeep
 *.traineddata
 
-# Logs
+# ====== JOURNAUX & LOGS ======
 logs/
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # ====== TRACES AI & IDE (ANTIGRAVITY / CURSOR / AI) ======
 .antigravity/
@@ -30,7 +34,7 @@ logs/
 *.antigravity*
 *.ai-context*
 
-# Cache AI & Sessions
+# ====== CACHE AI & SESSIONS ======
 .antigravity_cache/
 .cursor_cache/
 .ai_history/
