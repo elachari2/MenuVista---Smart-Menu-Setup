@@ -11,6 +11,9 @@ export interface PlatMatchInput {
   tags?: string[];
 }
 
+/**
+ * Service de Matching d'Images 100% Local (Sans aucune dépendance ou API externe).
+ */
 @Injectable()
 export class ImageMatchingService {
   private readonly logger = new Logger(ImageMatchingService.name);
@@ -23,16 +26,16 @@ export class ImageMatchingService {
   private cacheHits = 0;
   private totalLatencyMs = 0;
 
+  // Map de rotation pour faire défiler les visuels locaux lors du re-match
+  private rotationMap = new Map<string, number>();
+
   constructor(
     @Optional() private readonly datasetService?: DatasetService,
   ) {
     const dbPath = join(process.cwd(), 'data', 'dataset.db');
     this.db = new sqlite3.Database(dbPath);
-    this.logger.log('✅ Base de données SQLite chargée');
+    this.logger.log('✅ Base de données SQLite locale chargée');
   }
-
-  // Rotation map pour faire défiler les visuels lors du re-match
-  private rotationMap = new Map<string, number>();
 
   /**
    * Métriques pour l'administration
@@ -60,7 +63,7 @@ export class ImageMatchingService {
   }
 
   /**
-   * Recherche l'image la plus pertinente pour un plat (Interconnecté avec DatasetService & FTS5 & IA Pollinations)
+   * Recherche l'image la plus pertinente pour un plat (100% Locale via DatasetService & SQLite FTS5)
    */
   async matchPlat(
     input: string | PlatMatchInput,
@@ -109,7 +112,7 @@ export class ImageMatchingService {
       this.rotationMap.set(cleanNom, rotateOffset);
     }
 
-    // 1. Interconnexion avec DatasetService (Visuels HD diversifiés et ciblés de dataset.json)
+    // 1. Interconnexion avec DatasetService (Visuels HD locaux de dataset.json)
     if (this.datasetService) {
       const matchedVisual = this.datasetService.matchDishVisual(
         cleanNom,
@@ -121,7 +124,7 @@ export class ImageMatchingService {
       if (matchedVisual && matchedVisual.item) {
         this.totalLatencyMs += Date.now() - startTime;
         this.successfulMatches++;
-        this.logger.log(`✅ [Dataset Matching] Visuel HD ciblé pour "${cleanNom}" -> ${matchedVisual.item.image_url}`);
+        this.logger.log(`✅ [Dataset Matching Local] Visuel trouvé pour "${cleanNom}" -> ${matchedVisual.item.image_url}`);
 
         return {
           imageUrl: matchedVisual.item.image_url,
@@ -134,7 +137,7 @@ export class ImageMatchingService {
       }
     }
 
-    // 2. Recherche SQLite FTS5 (dataset.db)
+    // 2. Recherche SQLite FTS5 locale (dataset.db)
     return new Promise((resolve) => {
       const searchQuery = `${cleanNom} ${cleanCat} ${cleanTags.join(' ')}`.trim();
       const sanitizeToken = (t: string) => t.replace(/[^\w\s]/gi, ' ').trim();
@@ -157,10 +160,10 @@ export class ImageMatchingService {
             const relPath = row.image_path;
             const fullDiskPath = join(process.cwd(), 'data', 'images', relPath);
 
-            if (relPath.startsWith('http') || fs.existsSync(fullDiskPath)) {
+            if (fs.existsSync(fullDiskPath) || relPath.startsWith('/images/')) {
               const normalizedScore = Math.max(0.5, Math.min(1, 1 - (row.score || 0) / 10));
               this.successfulMatches++;
-              const imageUrl = relPath.startsWith('http') ? relPath : `/images/dataset/${relPath}`;
+              const imageUrl = relPath.startsWith('/') ? relPath : `/images/dataset/${relPath}`;
 
               resolve({
                 imageUrl,
@@ -174,7 +177,7 @@ export class ImageMatchingService {
             }
           }
 
-          // 3. Moteur Photographique Gastronomique HD + IA Pollinations pour visuels 100% uniques
+          // 3. Fallback Moteur Photographique 100% Local
           this.fallbackMatches++;
           const fallbackRes = this.getFallbackMatch(categorie, nom, rotateOffset);
           resolve(fallbackRes);
@@ -184,13 +187,13 @@ export class ImageMatchingService {
   }
 
   /**
-   * Moteur Photographique Gastronomique Universel avec Génération IA Culinaire Dynamique
+   * Moteur Photographique Gastronomique 100% Local (sans aucune URL externe)
    */
   private getFallbackMatch(categorie?: string, nom?: string, rotateOffset: number = 0): MatchResult {
     const cleanNom = (nom || '').trim();
     const text = `${categorie || ''} ${cleanNom}`.toLowerCase().trim();
 
-    // Hachage du nom pour garantir une sélection d'image unique par plat
+    // Hachage du nom pour sélectionner une image locale unique
     let hash = 0;
     for (let i = 0; i < cleanNom.length; i++) {
       hash = (hash << 5) - hash + cleanNom.charCodeAt(i);
@@ -198,41 +201,52 @@ export class ImageMatchingService {
     }
     const seed = Math.abs(hash) + rotateOffset;
 
-    // Pools de photographies gastronomiques HD par catégorie
+    // Pools de photographies locales HD du projet (fichiers disques réels)
     const pizzaPool = [
-      'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1573821663912-6df460f9c684?w=600&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=600&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1541745537411-b8046dc6d66c?w=600&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1511688878353-3a2f5be94cd7?w=600&auto=format&fit=crop&q=80',
+      '/images/dataset/margherita.webp',
+      '/images/dataset/4fromages.webp',
+      '/images/fallback/pizza.jpg',
     ];
 
     const burgerPool = [
-      'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?w=600&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=600&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1550547660-d9450f859349?w=600&auto=format&fit=crop&q=80',
+      '/images/dataset/cheeseburger.webp',
+      '/images/dataset/poulet_burger.webp',
+      '/images/fallback/burger.jpg',
     ];
 
-    const pastaPool = [
-      'https://images.unsplash.com/photo-1612874742237-6526221588e3?w=600&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1621996346565-e3d5d6281273?w=600&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=600&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1574894709920-11b28e7367e3?w=600&auto=format&fit=crop&q=80',
+    const meatPool = [
+      '/images/dataset/agneau_confit.webp',
+      '/images/dataset/tartare_boeuf.webp',
+      '/images/fallback/viande.jpg',
+    ];
+
+    const fishPool = [
+      '/images/dataset/saumon_roti.webp',
+      '/images/dataset/crevettes_pilpil.webp',
+      '/images/fallback/poisson.jpg',
     ];
 
     const saladPool = [
-      'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=600&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1592417817098-8f3d6ef23a8f?w=600&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80',
+      '/images/dataset/salade_cesar.webp',
+      '/images/dataset/houmous.webp',
+      '/images/fallback/salade.jpg',
+    ];
+
+    const pastaPool = [
+      '/images/dataset/linguine_gambas.webp',
+      '/images/dataset/risotto_cepes.webp',
+      '/images/fallback/plat.jpg',
+    ];
+
+    const beveragePool = [
+      '/images/dataset/mojito.webp',
+      '/images/dataset/margarita_cocktail.webp',
+      '/images/fallback/boisson.jpg',
     ];
 
     const dessertPool = [
-      'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=600&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=600&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1568571780765-9276ac8b75a2?w=600&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1470124182917-cc6e71b22ecc?w=600&auto=format&fit=crop&q=80',
+      '/images/dataset/tiramisu.webp',
+      '/images/fallback/dessert.jpg',
     ];
 
     let imageUrl = '';
@@ -241,16 +255,20 @@ export class ImageMatchingService {
       imageUrl = pizzaPool[seed % pizzaPool.length];
     } else if (text.includes('burger') || text.includes('cheeseburger')) {
       imageUrl = burgerPool[seed % burgerPool.length];
-    } else if (text.includes('pâte') || text.includes('pasta') || text.includes('spaghetti') || text.includes('penne') || text.includes('linguine') || text.includes('lasagne')) {
+    } else if (text.includes('viande') || text.includes('boeuf') || text.includes('steak') || text.includes('agneau')) {
+      imageUrl = meatPool[seed % meatPool.length];
+    } else if (text.includes('poisson') || text.includes('saumon') || text.includes('gambas') || text.includes('crevette')) {
+      imageUrl = fishPool[seed % fishPool.length];
+    } else if (text.includes('pâte') || text.includes('pasta') || text.includes('spaghetti') || text.includes('risotto') || text.includes('linguine')) {
       imageUrl = pastaPool[seed % pastaPool.length];
     } else if (text.includes('salade') || text.includes('entrée') || text.includes('cesar') || text.includes('houmous')) {
       imageUrl = saladPool[seed % saladPool.length];
-    } else if (text.includes('dessert') || text.includes('tiramisu') || text.includes('gâteau') || text.includes('glace') || text.includes('tarte')) {
+    } else if (text.includes('boisson') || text.includes('cocktail') || text.includes('mojito') || text.includes('jus') || text.includes('café')) {
+      imageUrl = beveragePool[seed % beveragePool.length];
+    } else if (text.includes('dessert') || text.includes('tiramisu') || text.includes('gâteau') || text.includes('glace')) {
       imageUrl = dessertPool[seed % dessertPool.length];
     } else {
-      // Génération d'une image culinaire IA unique via l'API Pollinations pour tout plat personnalisé
-      const promptParam = encodeURIComponent(`delicious gourmet restaurant food dish ${cleanNom || categorie || 'meal'}`);
-      imageUrl = `https://pollinations.ai/p/${promptParam}?width=600&height=400&nologo=true&seed=${seed}`;
+      imageUrl = '/images/fallback/plat.jpg';
     }
 
     return {

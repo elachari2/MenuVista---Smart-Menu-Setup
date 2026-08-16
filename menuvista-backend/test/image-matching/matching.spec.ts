@@ -41,7 +41,7 @@ describe('ImageMatchingService', () => {
   it('devrait retourner un fallback par catégorie pour pizza', async () => {
     const result = await service.matchPlat('plat_inconnu_xyz', 'pizza');
     expect(result.matched).toBe(true);
-    expect(result.imageUrl).toContain('http');
+    expect(result.imageUrl).toContain('/images/');
     expect(result.category).toBe('pizza');
   });
 

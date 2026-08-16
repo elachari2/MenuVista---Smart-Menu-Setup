@@ -8,6 +8,7 @@ import { LlmService } from '../llm/llm.service';
 import { StructurationService } from '../structuration/structuration.service';
 import { MenuService } from '../menu/menu.service';
 import { EnrichmentService } from '../enrichment/enrichment.service';
+import { ImageMatchingService } from '../image-matching/image-matching.service';
 import { ImageMatchingQueueService } from '../image-matching/image-matching.queue.service';
 import { AppLogger } from '../../common/logger/logger.util';
 import { UploadResponseDto } from './dto/upload-response.dto';
@@ -28,6 +29,7 @@ export class UploadService {
     private readonly structurationService: StructurationService,
     private readonly menuService: MenuService,
     private readonly enrichmentService: EnrichmentService,
+    private readonly matchingService: ImageMatchingService,
     private readonly matchingQueueService: ImageMatchingQueueService,
     private readonly logger: AppLogger,
   ) {}
@@ -147,23 +149,21 @@ export class UploadService {
         );
       }
 
-      // 7. SPRINT 4 — ASSOCIATION DE VISUELS DE PLATS PAR DATASET LOCAL (Queue BullMQ / Redis)
+      // 7. SPRINT 4 — ASSOCIATION IMMEDIATE & SYNCHRONE DES VISUELS DE PLATS (Dataset Local)
       try {
-        this.logger.log(`Déclenchement du matching d'images BullMQ pour le menu ${createdMenu.id}...`, context);
+        this.logger.log(`Association synchrone des visuels locaux pour le menu ${createdMenu.id}...`, context);
         const dishesForMatching = await this.menuService.getDishesForEnrichment(createdMenu.id);
         if (dishesForMatching.length > 0) {
-          await this.matchingQueueService.addMatchingJob(
-            createdMenu.id,
-            dishesForMatching.map((d) => ({
-              id: d.platId,
-              nom: d.nom,
-              categorie: d.categorie,
-            })),
-          );
+          for (const dish of dishesForMatching) {
+            const matchResult = await this.matchingService.matchPlat(dish.nom, dish.categorie);
+            if (matchResult && matchResult.imageUrl) {
+              await this.menuService.updatePlatImage(dish.platId, matchResult.imageUrl);
+            }
+          }
         }
       } catch (matchErr: unknown) {
         const matchErrMsg = matchErr instanceof Error ? matchErr.message : String(matchErr);
-        this.logger.warn(`Avertissement lors du déclenchement du matching d'images (${matchErrMsg}).`, context);
+        this.logger.warn(`Avertissement lors du matching synchrone (${matchErrMsg}).`, context);
       }
 
       // 8. Finalisation du job

@@ -1,14 +1,18 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Optional } from '@nestjs/common';
 import { ImageMatchingService } from '../image-matching/image-matching.service';
+import { MenuService } from '../menu/menu.service';
 
 @Processor('image-matching')
 @Injectable()
 export class ImageMatchingProcessor extends WorkerHost {
   private readonly logger = new Logger(ImageMatchingProcessor.name);
 
-  constructor(private readonly matchingService: ImageMatchingService) {
+  constructor(
+    private readonly matchingService: ImageMatchingService,
+    @Optional() private readonly menuService?: MenuService,
+  ) {
     super();
   }
 
@@ -27,6 +31,10 @@ export class ImageMatchingProcessor extends WorkerHost {
         plat.categorie,
         plat.tags,
       );
+
+      if (result && result.imageUrl && this.menuService) {
+        await this.menuService.updatePlatImage(plat.id, result.imageUrl);
+      }
 
       results.push({
         platId: plat.id,

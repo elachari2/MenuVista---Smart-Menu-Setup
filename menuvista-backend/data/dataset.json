@@ -3,371 +3,399 @@
     "id": 1,
     "nom": "Pizza Margherita",
     "categorie": "Pizza",
-    "tags": "italienne vegetarien fromage pizza margherita tomate basilic",
-    "image_url": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&auto=format&fit=crop&q=80"
+    "tags": "italienne vegetarien fromage margherita tomate basilic",
+    "image_url": "/images/dataset/margherita.webp"
   },
   {
     "id": 2,
     "nom": "Pizza Quatre Fromages",
     "categorie": "Pizza",
-    "tags": "italienne fromage pizza gorgonzola mozzarella emmental parmesan 4fromages",
-    "image_url": "https://images.unsplash.com/photo-1573821663912-6df460f9c684?w=600&auto=format&fit=crop&q=80"
+    "tags": "italienne fromage gorgonzola mozzarella emmental parmesan 4fromages",
+    "image_url": "/images/dataset/4fromages.webp"
   },
   {
     "id": 3,
     "nom": "Pizza Pepperoni",
     "categorie": "Pizza",
-    "tags": "italienne viande pizza pepperoni salami epice spicy",
-    "image_url": "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=600&auto=format&fit=crop&q=80"
+    "tags": "italienne viande pepperoni salami epice spicy",
+    "image_url": "/images/dataset/pizza_pepperoni.webp"
   },
   {
     "id": 4,
     "nom": "Pizza Calzone Soufflée",
     "categorie": "Pizza",
-    "tags": "italienne pizza calzone chausson jambon fromage oeuf",
-    "image_url": "https://images.unsplash.com/photo-1541745537411-b8046dc6d66c?w=600&auto=format&fit=crop&q=80"
+    "tags": "italienne calzone chausson jambon fromage oeuf",
+    "image_url": "/images/dataset/pizza_calzone.webp"
   },
   {
     "id": 5,
     "nom": "Pizza Végétarienne",
     "categorie": "Pizza",
-    "tags": "italienne vegetarien pizza poivron champignon olive courgette bio",
-    "image_url": "https://images.unsplash.com/photo-1511688878353-3a2f5be94cd7?w=600&auto=format&fit=crop&q=80"
+    "tags": "italienne vegetarien poivron champignon olive courgette bio",
+    "image_url": "/images/dataset/pizza_veggie.webp"
   },
   {
     "id": 6,
-    "nom": "Pizza Truffe & Burrata",
+    "nom": "Pizza Poulet BBQ",
     "categorie": "Pizza",
-    "tags": "italienne gourmet pizza truffe burrata roquette fromage",
-    "image_url": "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=600&auto=format&fit=crop&q=80"
+    "tags": "poulet bbq oignon fumee cheddar pizza",
+    "image_url": "/images/dataset/pizza_bbq.webp"
   },
   {
     "id": 7,
-    "nom": "Pizza Poulet BBQ",
+    "nom": "Pizza Reine",
     "categorie": "Pizza",
-    "tags": "pizza poulet bbq oignon fumee cheddar",
-    "image_url": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&auto=format&fit=crop&q=80"
+    "tags": "italienne jambon champignon fromage pizza reine",
+    "image_url": "/images/dataset/pizza_reine.webp"
   },
   {
     "id": 8,
-    "nom": "Cheeseburger Pur Boeuf",
-    "categorie": "Burger",
-    "tags": "viande burger fromage bacon boeuf cheddar classic",
-    "image_url": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&auto=format&fit=crop&q=80"
+    "nom": "Pizza Truffe & Burrata",
+    "categorie": "Pizza",
+    "tags": "italienne gourmet truffe burrata roquette fromage",
+    "image_url": "/images/dataset/pizza_truffe.webp"
   },
   {
     "id": 9,
-    "nom": "Burger Poulet Crispy",
+    "nom": "Cheeseburger Pur Boeuf",
     "categorie": "Burger",
-    "tags": "poulet frites burger crispy croustillant mayonnaise",
-    "image_url": "https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?w=600&auto=format&fit=crop&q=80"
+    "tags": "viande bacon burger boeuf cheddar classic",
+    "image_url": "/images/dataset/cheeseburger.webp"
   },
   {
     "id": 10,
-    "nom": "Double Bacon Cheese Burger",
+    "nom": "Burger Poulet Crispy",
     "categorie": "Burger",
-    "tags": "viande burger bacon double boeuf cheddar barbecue",
-    "image_url": "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=600&auto=format&fit=crop&q=80"
+    "tags": "poulet frites burger crispy croustillant mayonnaise",
+    "image_url": "/images/dataset/poulet_burger.webp"
   },
   {
     "id": 11,
-    "nom": "Smash Burger Gourmet",
+    "nom": "Double Bacon Cheese Burger",
     "categorie": "Burger",
-    "tags": "viande burger smash boeuf caramelise pickle cheddar",
-    "image_url": "https://images.unsplash.com/photo-1550547660-d9450f859349?w=600&auto=format&fit=crop&q=80"
+    "tags": "viande burger bacon double boeuf cheddar barbecue",
+    "image_url": "/images/dataset/burger_bacon.webp"
   },
   {
     "id": 12,
-    "nom": "Veggie Burger Avocat",
+    "nom": "Smash Burger Gourmet",
     "categorie": "Burger",
-    "tags": "vegetarien burger avocat quinoa galette sain bio",
-    "image_url": "https://images.unsplash.com/photo-1520072959219-c595dc870360?w=600&auto=format&fit=crop&q=80"
+    "tags": "viande burger smash boeuf caramelise pickle cheddar",
+    "image_url": "/images/dataset/burger_smash.webp"
   },
   {
     "id": 13,
-    "nom": "Burger Champignons & Swiss",
+    "nom": "Veggie Burger Avocat",
     "categorie": "Burger",
-    "tags": "viande burger champignon emmental boeuf gourmet",
-    "image_url": "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?w=600&auto=format&fit=crop&q=80"
+    "tags": "vegetarien burger avocat quinoa galette sain bio",
+    "image_url": "/images/dataset/burger_veggie.webp"
   },
   {
     "id": 14,
-    "nom": "Spaghetti Carbonara Italienne",
-    "categorie": "Pâtes",
-    "tags": "pates pasta carbonara pancetta oeuf parmesan italienne",
-    "image_url": "https://images.unsplash.com/photo-1612874742237-6526221588e3?w=600&auto=format&fit=crop&q=80"
+    "nom": "Burger Champignons & Swiss",
+    "categorie": "Burger",
+    "tags": "viande burger champignon emmental boeuf gourmet",
+    "image_url": "/images/dataset/burger_swiss.webp"
   },
   {
     "id": 15,
-    "nom": "Penne Bolognese Pur Bœuf",
-    "categorie": "Pâtes",
-    "tags": "pates pasta bolognese boeuf tomate sauce parmesan",
-    "image_url": "https://images.unsplash.com/photo-1621996346565-e3d5d6281273?w=600&auto=format&fit=crop&q=80"
-  },
-  {
-    "id": 16,
-    "nom": "Linguine aux Gambas & Ail",
-    "categorie": "Pâtes",
-    "tags": "pasta gambas pates crevettes mer ail persil",
-    "image_url": "https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=600&auto=format&fit=crop&q=80"
-  },
-  {
-    "id": 17,
-    "nom": "Lasagnes Maison au Four",
-    "categorie": "Pâtes",
-    "tags": "pates pasta lasagne boeuf gratine bechamel tomate",
-    "image_url": "https://images.unsplash.com/photo-1574894709920-11b28e7367e3?w=600&auto=format&fit=crop&q=80"
-  },
-  {
-    "id": 18,
-    "nom": "Pesto Genovese & Pignons",
-    "categorie": "Pâtes",
-    "tags": "pates pasta pesto basilic vegetarien pignons parmesan",
-    "image_url": "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=600&auto=format&fit=crop&q=80"
-  },
-  {
-    "id": 19,
-    "nom": "Risotto aux Cèpes Sauvages",
-    "categorie": "Pâtes",
-    "tags": "risotto champignon cepes parmesan creme italienne",
-    "image_url": "https://images.unsplash.com/photo-1633964913295-ceb43826e7c9?w=600&auto=format&fit=crop&q=80"
-  },
-  {
-    "id": 20,
-    "nom": "Salade César au Poulet Grillé",
-    "categorie": "Salade",
-    "tags": "salade poulet entree frais parmesan croutons cesar",
-    "image_url": "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=600&auto=format&fit=crop&q=80"
-  },
-  {
-    "id": 21,
-    "nom": "Salade Niçoise au Thon",
-    "categorie": "Salade",
-    "tags": "salade thon oeuf haricot olive frais mediterranee",
-    "image_url": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&auto=format&fit=crop&q=80"
-  },
-  {
-    "id": 22,
-    "nom": "Caprese Tomate Mozzarella Burrata",
-    "categorie": "Salade",
-    "tags": "salade mozza tomate basilic burrata vegetarien pesto",
-    "image_url": "https://images.unsplash.com/photo-1592417817098-8f3d6ef23a8f?w=600&auto=format&fit=crop&q=80"
-  },
-  {
-    "id": 23,
-    "nom": "Houmous & Pain Pita Oriental",
-    "categorie": "Entrée",
-    "tags": "oriental vegetarien houmous pois chiche pita huile olive tapas",
-    "image_url": "https://images.unsplash.com/photo-1577906096429-f73c2c312435?w=600&auto=format&fit=crop&q=80"
-  },
-  {
-    "id": 24,
-    "nom": "Salade Grecque Féta Olives",
-    "categorie": "Salade",
-    "tags": "salade feta concombre poivron olive grecque vegetarien",
-    "image_url": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80"
-  },
-  {
-    "id": 25,
-    "nom": "Steak Haché Grillé Frites",
-    "categorie": "Viande",
-    "tags": "viande boeuf steak frites grillade sauce poivre",
-    "image_url": "https://images.unsplash.com/photo-1558030006-450675393462?w=600&auto=format&fit=crop&q=80"
-  },
-  {
-    "id": 26,
-    "nom": "Poulet Rôti aux Herbes de Provence",
-    "categorie": "Viande",
-    "tags": "poulet roti viande braise pommes terre jus",
-    "image_url": "https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=600&auto=format&fit=crop&q=80"
-  },
-  {
-    "id": 27,
     "nom": "Souris d Agneau Confite",
     "categorie": "Viande",
     "tags": "agneau tajine viande braise confit romarin purees",
-    "image_url": "https://images.unsplash.com/photo-1544025162-d76694265947?w=600&auto=format&fit=crop&q=80"
+    "image_url": "/images/dataset/agneau_confit.webp"
   },
   {
-    "id": 28,
+    "id": 16,
     "nom": "Tartare de Filet de Bœuf",
     "categorie": "Viande",
     "tags": "boeuf tartare viande cru oeuf frites salade chef",
-    "image_url": "https://images.unsplash.com/photo-1544025162-d76694265947?w=600&auto=format&fit=crop&q=80"
+    "image_url": "/images/dataset/tartare_boeuf.webp"
   },
   {
-    "id": 29,
-    "nom": "Brochettes de Poulet Marinées",
+    "id": 17,
+    "nom": "Steak Haché Grillé Frites",
     "categorie": "Viande",
-    "tags": "poulet brochettes barbecue grillade epices rize",
-    "image_url": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600&auto=format&fit=crop&q=80"
+    "tags": "viande boeuf steak frites grillade sauce poivre",
+    "image_url": "/images/dataset/steak_frites.webp"
   },
   {
-    "id": 30,
-    "nom": "Filet de Saumon Rôti au Citron",
+    "id": 18,
+    "nom": "Poulet Rôti aux Herbes",
+    "categorie": "Viande",
+    "tags": "poulet roti viande braise pommes terre jus",
+    "image_url": "/images/dataset/poulet_roti.webp"
+  },
+  {
+    "id": 19,
+    "nom": "Brochettes d Agneau Grillées",
+    "categorie": "Viande",
+    "tags": "agneau brochettes barbecue grillade epices riz",
+    "image_url": "/images/dataset/brochettes_agneau.webp"
+  },
+  {
+    "id": 20,
+    "nom": "Wok de Bœuf aux Légumes",
+    "categorie": "Viande",
+    "tags": "boeuf wok legumes asiatique sauce soja",
+    "image_url": "/images/dataset/wok_boeuf.webp"
+  },
+  {
+    "id": 21,
+    "nom": "Filet de Saumon Rôti",
     "categorie": "Poisson",
     "tags": "saumon mer grillade poisson riz legumes aneth",
-    "image_url": "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=600&auto=format&fit=crop&q=80"
+    "image_url": "/images/dataset/saumon_roti.webp"
   },
   {
-    "id": 31,
-    "nom": "Crevettes Sautées Pil Pil Ail",
+    "id": 22,
+    "nom": "Crevettes Sautées Pil Pil",
     "categorie": "Poisson",
     "tags": "crevettes pilpil ail piment persil tapas fruits mer",
-    "image_url": "https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?w=600&auto=format&fit=crop&q=80"
+    "image_url": "/images/dataset/crevettes_pilpil.webp"
   },
   {
-    "id": 32,
-    "nom": "Calamars Grillés à la Plancha",
+    "id": 23,
+    "nom": "Calamars Grillés Plancha",
     "categorie": "Poisson",
     "tags": "calamar plancha mer persillade citron poisson",
-    "image_url": "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=600&auto=format&fit=crop&q=80"
+    "image_url": "/images/dataset/calamars_grilles.webp"
   },
   {
-    "id": 33,
-    "nom": "Plateau Sushi Maki Saumon Avocat",
-    "categorie": "Poisson",
-    "tags": "sushi maki saumon avocat asiatique japonais poisson",
-    "image_url": "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=600&auto=format&fit=crop&q=80"
-  },
-  {
-    "id": 34,
+    "id": 24,
     "nom": "Fish and Chips Sauce Tartare",
     "categorie": "Poisson",
     "tags": "fish chips poisson pane frites citron britannique",
-    "image_url": "https://images.unsplash.com/photo-1579202673506-ca3ce28943ef?w=600&auto=format&fit=crop&q=80"
+    "image_url": "/images/dataset/fish_and_chips.webp"
+  },
+  {
+    "id": 25,
+    "nom": "Plateau Sushi Maki Saumon",
+    "categorie": "Poisson",
+    "tags": "sushi maki saumon avocat asiatique japonais poisson",
+    "image_url": "/images/dataset/sushi_maki.webp"
+  },
+  {
+    "id": 26,
+    "nom": "Salade César au Poulet",
+    "categorie": "Salade",
+    "tags": "salade poulet entree frais parmesan croutons cesar",
+    "image_url": "/images/dataset/salade_cesar.webp"
+  },
+  {
+    "id": 27,
+    "nom": "Houmous & Pain Pita",
+    "categorie": "Entrée",
+    "tags": "oriental vegetarien houmous pois chiche pita huile olive tapas",
+    "image_url": "/images/dataset/houmous.webp"
+  },
+  {
+    "id": 28,
+    "nom": "Salade Niçoise au Thon",
+    "categorie": "Salade",
+    "tags": "salade thon oeuf haricot olive frais mediterranee",
+    "image_url": "/images/dataset/salade_nicoise.webp"
+  },
+  {
+    "id": 29,
+    "nom": "Caprese Tomate Burrata",
+    "categorie": "Salade",
+    "tags": "salade mozza tomate basilic burrata vegetarien pesto",
+    "image_url": "/images/dataset/caprese_burrata.webp"
+  },
+  {
+    "id": 30,
+    "nom": "Salade Grecque Féta",
+    "categorie": "Salade",
+    "tags": "salade feta concombre poivron olive grecque vegetarien",
+    "image_url": "/images/dataset/salade_grecque.webp"
+  },
+  {
+    "id": 31,
+    "nom": "Linguine aux Gambas",
+    "categorie": "Pâtes",
+    "tags": "pasta gambas pates crevettes mer ail persil",
+    "image_url": "/images/dataset/linguine_gambas.webp"
+  },
+  {
+    "id": 32,
+    "nom": "Risotto aux Cèpes",
+    "categorie": "Pâtes",
+    "tags": "risotto champignon cepes parmesan creme italienne",
+    "image_url": "/images/dataset/risotto_cepes.webp"
+  },
+  {
+    "id": 33,
+    "nom": "Spaghetti Carbonara",
+    "categorie": "Pâtes",
+    "tags": "pates pasta carbonara pancetta oeuf parmesan italienne",
+    "image_url": "/images/dataset/spaghetti_carbonara.webp"
+  },
+  {
+    "id": 34,
+    "nom": "Penne Bolognese Pur Bœuf",
+    "categorie": "Pâtes",
+    "tags": "pates pasta bolognese boeuf tomate sauce parmesan",
+    "image_url": "/images/dataset/penne_bolognese.webp"
   },
   {
     "id": 35,
-    "nom": "Mojito Menthe Fraîche",
-    "categorie": "Cocktail",
-    "tags": "boisson cocktail menthe rhum frais glace pilee mocktail",
-    "image_url": "https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600&auto=format&fit=crop&q=80"
+    "nom": "Lasagnes Maison au Four",
+    "categorie": "Pâtes",
+    "tags": "pates pasta lasagne boeuf gratine bechamel tomate",
+    "image_url": "/images/dataset/lasagnes_maison.webp"
   },
   {
     "id": 36,
-    "nom": "Margarita Tequila Citron Vert",
-    "categorie": "Cocktail",
-    "tags": "boisson cocktail tequila citron sel aperitif",
-    "image_url": "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=600&auto=format&fit=crop&q=80"
+    "nom": "Pesto Genovese & Pignons",
+    "categorie": "Pâtes",
+    "tags": "pates pasta pesto basilic vegetarien pignons parmesan",
+    "image_url": "/images/dataset/pesto_genovese.webp"
   },
   {
     "id": 37,
-    "nom": "Jus d Orange Frais Pressé",
-    "categorie": "Boisson",
-    "tags": "jus orange frais boisson bio fruit vitamine detox",
-    "image_url": "https://images.unsplash.com/photo-1613478223719-2ab802602423?w=600&auto=format&fit=crop&q=80"
+    "nom": "Tajine de Poulet Citrons Confits",
+    "categorie": "Plat",
+    "tags": "tajine poulet citron olives marocain oriental epices fait maison",
+    "image_url": "/images/dataset/tajine_poulet.webp"
   },
   {
     "id": 38,
-    "nom": "Limonade Cerise Citron",
-    "categorie": "Boisson",
-    "tags": "limonade cerise boisson citron rafraichissant frais",
-    "image_url": "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=600&auto=format&fit=crop&q=80"
+    "nom": "Tajine d Agneau aux Pruneaux",
+    "categorie": "Plat",
+    "tags": "tajine agneau pruneaux amandes marocain oriental epices sucre sale",
+    "image_url": "/images/dataset/tajine_agneau.webp"
   },
   {
     "id": 39,
-    "nom": "Thé Glacé Pêche Menthe",
-    "categorie": "Boisson",
-    "tags": "the vert menthe boisson mocktail sain peche iced tea",
-    "image_url": "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=600&auto=format&fit=crop&q=80"
+    "nom": "Couscous Royal 7 Légumes",
+    "categorie": "Plat",
+    "tags": "couscous royal legumes poulet merguez agneau semoule oriental marocain",
+    "image_url": "/images/dataset/couscous_royal.webp"
   },
   {
     "id": 40,
-    "nom": "Espresso Barista Italien",
-    "categorie": "Boisson",
-    "tags": "cafe espresso boisson chaud barista arabica",
-    "image_url": "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=600&auto=format&fit=crop&q=80"
+    "nom": "Arabic Shawarma Kebab",
+    "categorie": "Plat",
+    "tags": "oriental viande wrap poulet kebab shawarma chawarma pita garlic",
+    "image_url": "/images/dataset/shawarma_kebab.webp"
   },
   {
     "id": 41,
-    "nom": "Cappuccino Mousse de Lait",
-    "categorie": "Boisson",
-    "tags": "cafe cappuccino lait boisson chaud barista cacao",
-    "image_url": "https://images.unsplash.com/photo-1534778101976-62847782c213?w=600&auto=format&fit=crop&q=80"
+    "nom": "Assiette Falafel Crispy",
+    "categorie": "Plat",
+    "tags": "falafel vegetarien pois chiche tahina oriental hummus salad",
+    "image_url": "/images/dataset/falafel_assiette.webp"
   },
   {
     "id": 42,
-    "nom": "Smoothie Fruits Rouges & Banane",
+    "nom": "Mojito Menthe Fraîche",
     "categorie": "Boisson",
-    "tags": "smoothie fraise framboise banane fruit boisson bio",
-    "image_url": "https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=600&auto=format&fit=crop&q=80"
+    "tags": "boisson cocktail menthe rhum frais glace pilee mocktail",
+    "image_url": "/images/dataset/mojito.webp"
   },
   {
     "id": 43,
-    "nom": "Tiramisu Traditionnel au Café",
-    "categorie": "Dessert",
-    "tags": "dessert cafe sucre tiramisu mascarpone cacao italienne",
-    "image_url": "https://images.unsplash.com/photo-1551024601-bec78aea704b?w=600&auto=format&fit=crop&q=80"
+    "nom": "Margarita Cocktail",
+    "categorie": "Boisson",
+    "tags": "boisson cocktail tequila citron sel aperitif",
+    "image_url": "/images/dataset/margarita_cocktail.webp"
   },
   {
     "id": 44,
-    "nom": "Fondant au Chocolat Coeur Coulant",
-    "categorie": "Dessert",
-    "tags": "dessert chocolat fondant gateau vanille glace",
-    "image_url": "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=600&auto=format&fit=crop&q=80"
+    "nom": "Jus d Orange Pressé",
+    "categorie": "Boisson",
+    "tags": "jus orange frais boisson bio fruit vitamine detox",
+    "image_url": "/images/dataset/jus_orange.webp"
   },
   {
     "id": 45,
-    "nom": "Tarte Tatin Pommes Caramelisées",
-    "categorie": "Dessert",
-    "tags": "dessert tarte tatin pomme caramel glace vanille",
-    "image_url": "https://images.unsplash.com/photo-1568571780765-9276ac8b75a2?w=600&auto=format&fit=crop&q=80"
+    "nom": "Limonade Cerise Citron",
+    "categorie": "Boisson",
+    "tags": "limonade cerise boisson citron rafraichissant frais",
+    "image_url": "/images/dataset/limonade_cerise.webp"
   },
   {
     "id": 46,
-    "nom": "Crème Brûlée à la Vanille Bourbon",
-    "categorie": "Dessert",
-    "tags": "dessert creme brulee vanille caramelise francais",
-    "image_url": "https://images.unsplash.com/photo-1470124182917-cc6e71b22ecc?w=600&auto=format&fit=crop&q=80"
+    "nom": "Thé Glacé Pêche Menthe",
+    "categorie": "Boisson",
+    "tags": "the vert menthe boisson mocktail sain peche iced tea",
+    "image_url": "/images/dataset/the_glace.webp"
   },
   {
     "id": 47,
-    "nom": "Cheesecake New York Fraise",
-    "categorie": "Dessert",
-    "tags": "dessert cheesecake fraise coulis fromage sucre american",
-    "image_url": "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=600&auto=format&fit=crop&q=80"
+    "nom": "Espresso Barista Italien",
+    "categorie": "Boisson",
+    "tags": "cafe espresso boisson chaud barista arabica",
+    "image_url": "/images/dataset/espresso.webp"
   },
   {
     "id": 48,
-    "nom": "Coupe Glace Artisanale 3 Boules",
-    "categorie": "Dessert",
-    "tags": "dessert glace vanille chocolat fraise chantilly",
-    "image_url": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=600&auto=format&fit=crop&q=80"
+    "nom": "Cappuccino Mousse Lait",
+    "categorie": "Boisson",
+    "tags": "cafe cappuccino lait boisson chaud barista cacao",
+    "image_url": "/images/dataset/cappuccino.webp"
   },
   {
     "id": 49,
-    "nom": "Tajine de Poulet Citrons Confits & Olives",
-    "categorie": "Plat",
-    "tags": "tajine poulet citron olives marocain oriental epices fait maison",
-    "image_url": "https://images.unsplash.com/photo-1541518763669-27fef04b14ea?w=600&auto=format&fit=crop&q=80"
+    "nom": "Smoothie Fruits Rouges",
+    "categorie": "Boisson",
+    "tags": "smoothie fraise framboise banane fruit boisson bio",
+    "image_url": "/images/dataset/smoothie_fruits_rouges.webp"
   },
   {
     "id": 50,
-    "nom": "Tajine d Agneau aux Pruneaux & Amandes",
-    "categorie": "Plat",
-    "tags": "tajine agneau pruneaux amandes marocain oriental epices sucré salé",
-    "image_url": "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=600&auto=format&fit=crop&q=80"
+    "nom": "Tiramisu au Café",
+    "categorie": "Dessert",
+    "tags": "dessert cafe sucre tiramisu mascarpone cacao italienne",
+    "image_url": "/images/dataset/tiramisu.webp"
   },
   {
     "id": 51,
-    "nom": "Couscous Royal 7 Légumes Poulet Merguez",
-    "categorie": "Plat",
-    "tags": "couscous royal legumes poulet merguez agneau semoule oriental marocain",
-    "image_url": "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=600&auto=format&fit=crop&q=80"
+    "nom": "Fondant au Chocolat Coulant",
+    "categorie": "Dessert",
+    "tags": "dessert chocolat fondant gateau vanille glace",
+    "image_url": "/images/dataset/fondant_chocolat.webp"
   },
   {
     "id": 52,
-    "nom": "Arabic Shawarma Kebab Poulet",
-    "categorie": "Plat",
-    "tags": "oriental viande wrap poulet kebab shawarma chawarma pita garlic",
-    "image_url": "https://images.unsplash.com/photo-1561651823-34feb02250e4?w=600&auto=format&fit=crop&q=80"
+    "nom": "Tarte Tatin Pommes Caramel",
+    "categorie": "Dessert",
+    "tags": "dessert tarte tatin pomme caramel glace vanille",
+    "image_url": "/images/dataset/tarte_tatin.webp"
   },
   {
     "id": 53,
-    "nom": "Assiette Falafel Crispy & Tahina",
-    "categorie": "Plat",
-    "tags": "falafel vegetarien pois chiche tahina oriental hummus salad",
-    "image_url": "https://images.unsplash.com/photo-1593001874117-c99c800e3eb7?w=600&auto=format&fit=crop&q=80"
+    "nom": "Crème Brûlée Vanille",
+    "categorie": "Dessert",
+    "tags": "dessert creme brulee vanille caramelise francais",
+    "image_url": "/images/dataset/creme_brulee.webp"
+  },
+  {
+    "id": 54,
+    "nom": "Cheesecake New York Fraise",
+    "categorie": "Dessert",
+    "tags": "dessert cheesecake fraise coulis fromage sucre american",
+    "image_url": "/images/dataset/cheesecake_fraise.webp"
+  },
+  {
+    "id": 55,
+    "nom": "Coupe Glace Artisanale",
+    "categorie": "Dessert",
+    "tags": "dessert glace vanille chocolat fraise chantilly",
+    "image_url": "/images/dataset/coupe_glace.webp"
+  },
+  {
+    "id": 56,
+    "nom": "Latte",
+    "categorie": "Boisson",
+    "tags": "boisson cafe latte espresso lait coffee",
+    "image_url": "/images/dataset/latte.webp"
+  },
+  {
+    "id": 57,
+    "nom": "Café Latte",
+    "categorie": "Boisson",
+    "tags": "boisson cafe latte espresso lait coffee",
+    "image_url": "/images/dataset/latte.webp"
   }
 ]

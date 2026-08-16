@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { PlatPreview, MultilingualValue } from '../../types/menu.types';
 import { Button } from '../UI/Button';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Link, Check, RefreshCw, Image as ImageIcon } from 'lucide-react';
 
 interface EditPlatModalProps {
   plat: PlatPreview | null;
@@ -55,6 +55,12 @@ export const EditPlatModal: React.FC<EditPlatModalProps> = ({
   const [selectedAllergenes, setSelectedAllergenes] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
+  // Image et remplacement dynamique par URL
+  const [currentImageUrl, setCurrentImageUrl] = useState<string | null>(null);
+  const [customUrlInput, setCustomUrlInput] = useState('');
+  const [isUpdatingImage, setIsUpdatingImage] = useState(false);
+  const [imageSuccessMsg, setImageSuccessMsg] = useState('');
+
   // Valeurs nutritionnelles de la carte modal
   const [calories, setCalories] = useState<number>(340);
   const [proteines, setProteines] = useState<number>(5);
@@ -82,6 +88,9 @@ export const EditPlatModal: React.FC<EditPlatModalProps> = ({
       setPrix(plat.prix || 0);
       setSelectedAllergenes(plat.allergenes || []);
       setSelectedTags(plat.tags || []);
+      setCurrentImageUrl(plat.imageUrl || null);
+      setCustomUrlInput('');
+      setImageSuccessMsg('');
 
       if (plat.nutrition) {
         setCalories(plat.nutrition.calories ?? 340);
@@ -98,6 +107,50 @@ export const EditPlatModal: React.FC<EditPlatModalProps> = ({
       }
     }
   }, [plat]);
+
+  /**
+   * Télécharge l'image depuis l'URL saisie, la sauvegarde dans data/images/ et met à jour dataset.json
+   */
+  const handleApplyCustomImage = async () => {
+    const rawUrl = customUrlInput.trim();
+    if (!rawUrl || !plat) return;
+    setIsUpdatingImage(true);
+    setImageSuccessMsg('');
+
+    const targetId = plat.id || 'plat_temp';
+
+    try {
+      const response = await fetch(`http://localhost:3000/api/v1/admin/plat/${targetId}/custom-image`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          imageUrl: rawUrl,
+          nom: nom || 'plat_custom',
+          categorie: 'Plat',
+          tags: selectedTags.join(' '),
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.imageUrl) {
+          setCurrentImageUrl(data.imageUrl);
+          setCustomUrlInput('');
+          setImageSuccessMsg('✓ Visuel HD téléchargé et enregistré dans dataset.json !');
+          setIsUpdatingImage(false);
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn('Backend custom image sync (fallback to direct URL):', err);
+    }
+
+    // Direct preview fallback if backend API is offline or returns error
+    setCurrentImageUrl(rawUrl);
+    setCustomUrlInput('');
+    setImageSuccessMsg('✓ Visuel appliqué à l\'écran !');
+    setIsUpdatingImage(false);
+  };
 
   /**
    * Appelle le service d'estimation locale (SQLite FTS + IA) pour calculer automatiquement toutes les valeurs nutritionnelles
@@ -179,11 +232,43 @@ export const EditPlatModal: React.FC<EditPlatModalProps> = ({
     }
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    let finalImageUrl = currentImageUrl || plat.imageUrl;
+
+    // Si l'utilisateur a collé une URL dans l'input sans avoir cliqué sur Appliquer Lien
+    if (customUrlInput.trim()) {
+      const rawUrl = customUrlInput.trim();
+      finalImageUrl = rawUrl;
+      const targetId = plat.id || 'plat_temp';
+
+      try {
+        const response = await fetch(`http://localhost:3000/api/v1/admin/plat/${targetId}/custom-image`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            imageUrl: rawUrl,
+            nom: nom || 'plat_custom',
+            categorie: 'Plat',
+            tags: selectedTags.join(' '),
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.imageUrl) {
+            finalImageUrl = data.imageUrl;
+          }
+        }
+      } catch (err) {
+        console.warn('Backend sync on submit error:', err);
+      }
+    }
 
     const updated: PlatPreview = {
       ...plat,
+      imageUrl: finalImageUrl,
       nom: typeof plat.nom === 'object' ? { ...plat.nom, fr: nom } : nom,
       description:
         typeof plat.description === 'object'
@@ -208,6 +293,13 @@ export const EditPlatModal: React.FC<EditPlatModalProps> = ({
     onClose();
   };
 
+  const defaultPhoto = 'http://localhost:3000/images/fallback/plat.jpg';
+  const displayPhotoUrl = currentImageUrl
+    ? currentImageUrl.startsWith('http')
+      ? currentImageUrl
+      : `http://localhost:3000${currentImageUrl}`
+    : defaultPhoto;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 overflow-y-auto">
       <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl border border-[#E8E4E0] relative my-8 max-h-[90vh] overflow-y-auto">
@@ -226,6 +318,59 @@ export const EditPlatModal: React.FC<EditPlatModalProps> = ({
         </div>
 
         <form onSubmit={handleFormSubmit} className="space-y-4">
+          {/* SECTION IMAGE DU PLAT & MODIFICATION DE L'IMAGE */}
+          <div className="bg-[#FAF8F6] p-4 rounded-2xl border border-[#E8E4E0] space-y-3">
+            <label className="block text-xs font-bold text-[#1E1A18]">
+              Visuel du plat (Image)
+            </label>
+
+            <div className="flex gap-4 items-center">
+              {/* Aperçu HD de l'image actuelle */}
+              <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-gray-100 border border-[#E8E4E0] flex-shrink-0 flex items-center justify-center">
+                <img
+                  src={displayPhotoUrl}
+                  alt={nom}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).src = defaultPhoto;
+                  }}
+                />
+              </div>
+
+              {/* Champ de saisie d'URL & Bouton de téléchargement */}
+              <div className="flex-1 space-y-2">
+                <div className="flex gap-2">
+                  <input
+                    type="url"
+                    value={customUrlInput}
+                    onChange={(e) => setCustomUrlInput(e.target.value)}
+                    placeholder="Collez le lien URL (https://...)"
+                    className="flex-1 px-3 py-2 bg-white border border-[#E8E4E0] rounded-xl text-xs text-[#1E1A18] focus:border-[#E85D2C] focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleApplyCustomImage}
+                    disabled={isUpdatingImage || !customUrlInput.trim()}
+                    className="bg-[#E85D2C] hover:bg-[#d44e1f] disabled:bg-gray-300 text-white text-xs font-bold px-3 py-2 rounded-xl transition-all flex items-center gap-1.5 whitespace-nowrap"
+                  >
+                    {isUpdatingImage ? (
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Link className="w-3.5 h-3.5" />
+                    )}
+                    <span>{isUpdatingImage ? 'Téléchargement...' : 'Appliquer Lien'}</span>
+                  </button>
+                </div>
+
+                {imageSuccessMsg && (
+                  <p className="text-[11px] font-bold text-green-600 flex items-center gap-1">
+                    <span>{imageSuccessMsg}</span>
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+
           {/* Nom du plat */}
           <div>
             <label className="block text-xs font-semibold text-[#1E1A18] mb-1">

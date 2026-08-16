@@ -84,15 +84,22 @@ export class DatasetService implements OnModuleInit {
 
     if (cleanTokens.length === 0) return [];
 
+    const normQuery = query.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+
     const scored = this.items
       .map((item) => {
+        const normItemNom = item.nom.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
         const haystack = `${item.nom} ${item.categorie} ${item.tags}`.toLowerCase();
         let matches = 0;
         cleanTokens.forEach((token) => {
           if (haystack.includes(token)) matches++;
         });
 
-        const score = matches / cleanTokens.length;
+        let bonus = 0;
+        if (normItemNom === normQuery) bonus = 10;
+        else if (normItemNom.includes(normQuery) || normQuery.includes(normItemNom)) bonus = 3;
+
+        const score = (matches / cleanTokens.length) + bonus;
         return { item, score };
       })
       .filter((res) => res.score > 0)
@@ -109,15 +116,51 @@ export class DatasetService implements OnModuleInit {
       this.loadDataset();
     }
 
-    const searchQuery = `${dishNom} ${category || ''} ${tags.join(' ')}`.trim();
+    const cleanNom = (dishNom || '').trim();
+    if (!cleanNom) return null;
+
+    const normalizedTarget = cleanNom
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+
+    // 1. Recherche par correspondance EXACTE du nom de plat (Priorité Absolue)
+    const exactIndex = this.items.findIndex((item) => {
+      const norm = item.nom
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+      return norm === normalizedTarget;
+    });
+
+    if (exactIndex !== -1 && rotateOffset === 0) {
+      return {
+        item: this.items[exactIndex],
+        candidates: [this.items[exactIndex]],
+      };
+    }
+
+    // 2. Sinon, recherche par tokens FTS5
+    const searchQuery = `${cleanNom} ${category || ''} ${tags.join(' ')}`.trim();
     const candidates = this.searchFTS5(searchQuery, 10);
 
     if (candidates.length === 0) {
+      if (exactIndex !== -1) {
+        return {
+          item: this.items[exactIndex],
+          candidates: [this.items[exactIndex]],
+        };
+      }
       return null;
     }
 
-    // Utilisation du hachage du nom + l'offset de rotation pour sélectionner un candidat unique
-    const baseHash = this.hashString(dishNom);
+    if (exactIndex !== -1) {
+      const exactItem = this.items[exactIndex];
+      const filtered = candidates.filter((c) => c.id !== exactItem.id);
+      candidates.unshift(exactItem);
+    }
+
+    const baseHash = this.hashString(cleanNom);
     const index = (baseHash + rotateOffset) % candidates.length;
     const selectedItem = candidates[index];
 
@@ -125,6 +168,78 @@ export class DatasetService implements OnModuleInit {
       item: selectedItem,
       candidates,
     };
+  }
+
+  /**
+   * Ajoute ou met à jour une entrée dans dataset.json avec une nouvelle image locale.
+   */
+  public upsertDishImage(
+    nom: string,
+    categorie: string,
+    tags: string,
+    imageUrl: string,
+  ): DatasetItem {
+    const cleanNom = nom.trim();
+    const normalizedTarget = cleanNom
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+
+    const existingIndex = this.items.findIndex((item) => {
+      const norm = item.nom
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+      return norm === normalizedTarget;
+    });
+
+    let resultItem: DatasetItem;
+
+    if (existingIndex !== -1) {
+      // Mise à jour de l'image existante
+      this.items[existingIndex].image_url = imageUrl;
+      if (categorie) this.items[existingIndex].categorie = categorie;
+      if (tags) this.items[existingIndex].tags = tags;
+      resultItem = this.items[existingIndex];
+      this.logger.log(`[Dataset Upsert] Image mise à jour pour '${cleanNom}': ${imageUrl}`);
+    } else {
+      // Création d'un nouveau plat dans dataset.json
+      const nextId =
+        this.items.length > 0 ? Math.max(...this.items.map((i) => i.id)) + 1 : 1;
+      resultItem = {
+        id: nextId,
+        nom: cleanNom,
+        categorie: categorie || 'Plat',
+        tags: tags || cleanNom.toLowerCase(),
+        image_url: imageUrl,
+      };
+      this.items.push(resultItem);
+      this.logger.log(`[Dataset Upsert] Nouveau plat ajouté au dataset '${cleanNom}': ${imageUrl}`);
+    }
+
+    // Persistance sur disque dans data/dataset.json
+    this.saveDataset();
+
+    return resultItem;
+  }
+
+  /**
+   * Sauvegarde le dataset actuel dans data/dataset.json
+   */
+  private saveDataset(): void {
+    const dataDir = path.resolve(process.cwd(), 'data');
+    if (!fs.existsSync(dataDir)) {
+      fs.mkdirSync(dataDir, { recursive: true });
+    }
+    const jsonPath =
+      process.env.DATASET_JSON_PATH || path.join(dataDir, 'dataset.json');
+    try {
+      fs.writeFileSync(jsonPath, JSON.stringify(this.items, null, 2), 'utf-8');
+      this.loadDataset();
+      this.logger.log(`[Dataset Gastronomique] dataset.json sauvegardé sur disque avec ${this.items.length} éléments.`);
+    } catch (err: any) {
+      this.logger.error(`[Dataset Gastronomique] Échec écriture dataset.json: ${err?.message || err}`);
+    }
   }
 
   /**

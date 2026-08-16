@@ -3,6 +3,7 @@ import { BullModule } from '@nestjs/bullmq';
 import { QueueService } from './queue.service';
 import { ImageMatchingProcessor } from './image-matching.processor';
 import { ImageMatchingModule } from '../image-matching/image-matching.module';
+import { MenuModule } from '../menu/menu.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ImageMatchingModule } from '../image-matching/image-matching.module';
       },
     }),
     ImageMatchingModule,
+    MenuModule,
   ],
   providers: [QueueService, ImageMatchingProcessor],
   exports: [QueueService],

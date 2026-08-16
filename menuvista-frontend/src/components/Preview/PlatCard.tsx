@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Coffee, RefreshCw, Edit3, Copy, Trash2 } from 'lucide-react';
 import { PlatPreview, MultilingualValue } from '../../types/menu.types';
@@ -26,6 +26,10 @@ export function PlatCard({
 }: PlatCardProps) {
   const [currentImage, setCurrentImage] = useState<string | null>(plat.imageUrl || null);
   const [isRematching, setIsRematching] = useState(false);
+
+  useEffect(() => {
+    setCurrentImage(plat.imageUrl || null);
+  }, [plat.imageUrl]);
 
   const getMultilingualText = (textObj: MultilingualValue | null | undefined): string => {
     if (!textObj) return '';
@@ -89,7 +93,39 @@ export function PlatCard({
     }
   };
 
-  const defaultGastronomicPhoto = 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&auto=format&fit=crop&q=80';
+  const handleCustomImage = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const inputUrl = window.prompt(`Collez l'URL de votre image pour "${nom}" :`);
+    if (!inputUrl || !inputUrl.trim()) return;
+
+    setIsRematching(true);
+    try {
+      const response = await fetch(`http://localhost:3000/api/v1/admin/plat/${plat.id}/custom-image`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          imageUrl: inputUrl.trim(),
+          nom,
+          categorie: categoryName,
+          tags: (plat.tags || []).join(' '),
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.imageUrl) {
+          setCurrentImage(data.imageUrl);
+          onRematchImage?.(plat.id, data.imageUrl);
+        }
+      }
+    } catch (err) {
+      console.error('Erreur remplacement image personnalisée:', err);
+    } finally {
+      setIsRematching(false);
+    }
+  };
+
+  const defaultGastronomicPhoto = 'http://localhost:3000/images/fallback/plat.jpg';
   const imageUrl = currentImage
     ? currentImage.startsWith('http')
       ? currentImage
@@ -118,18 +154,6 @@ export function PlatCard({
           ) : (
             <Coffee className="w-8 h-8 text-gray-400" />
           )}
-
-          {/* Bouton de réassociation d'image */}
-          <button
-            type="button"
-            onClick={handleRematch}
-            disabled={isRematching}
-            className="absolute bottom-1 left-1 right-1 bg-black/70 hover:bg-[#E85D2C] text-white text-[9px] font-semibold py-0.5 rounded-sm backdrop-blur-xs flex items-center justify-center gap-1 transition-colors"
-            title="Réassocier une image"
-          >
-            <RefreshCw className={`w-2.5 h-2.5 ${isRematching ? 'animate-spin' : ''}`} />
-            <span>Visuel</span>
-          </button>
         </div>
 
         {/* Informations du plat */}
