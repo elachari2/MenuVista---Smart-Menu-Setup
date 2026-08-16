@@ -1,0 +1,4 @@
+name: menuvista
+
+include:
+  - path: ./menuvista-backend/docker-compose.yml

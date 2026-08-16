@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+
+# Build
+dist/
+
+# Env
+.env
+
+# Storage
+uploads/*
+!uploads/.gitkeep
+*.traineddata
+
+# Logs
+logs/
+*.log
+
+# ====== TRACES AI & IDE (ANTIGRAVITY / CURSOR / AI) ======
+.antigravity/
+.antigravity
+.antigravity.json
+.antigravity_history/
+.ai/
+.ai
+.cursor/
+.cursor
+.history/
+.history
+*.antigravity*
+*.ai-context*
+
+# Cache AI & Sessions
+.antigravity_cache/
+.cursor_cache/
+.ai_history/
+.ai_cache/
+*.antigravity_session*
+*.cursor_session*
+*.ai_session*
+.session/
